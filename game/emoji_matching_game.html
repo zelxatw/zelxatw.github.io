@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emoji Matching Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            font-family: 'Poppins', sans-serif;
+            color: white;
+        }
+        h1 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(4, 50px);
+            gap: 6px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 240px;
+        }
+        button {
+            width: 50px;
+            height: 50px;
+            font-size: 2rem;
+            background: #ffffff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        button:hover {
+            background: #ffdb4d;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        .red {
+            background: rgba(255, 0, 0, 0.6) !important;
+            animation: shake 0.4s;
+        }
+        .green {
+            background: rgba(0, 255, 0, 0.6) !important;
+            animation: zoomInOut 0.6s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+        @keyframes zoomInOut {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        #win-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        #play-again {
+            width: 200px;
+            height: 60px;
+            font-size: 1.5rem;
+            background: #ffdb4d;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+        }
+        
+        #play-again:hover {
+            background: #ffc107;
+        }
+        
+        #play-again:active {
+            transform: scale(0.95);
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+    <h1>Opened: <span id="opened">0</span>　Matched: <span id="matched">0</span></h1>
+    <div class="container"></div>
+    <div id="win-screen">
+        <p>Congratulations! You matched all!</p>
+        <button id="play-again">Play Again</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var answers = [
+                "🧣", "🎩", "🧢", "👒", "🎓", "⛑", "👑", "👝",
+                "🧣", "🎩", "🧢", "👒", "🎓", "⛑", "👑", "👝"
+            ];
+            var first = null, second = null;
+            var firstEl, secondEl;
+            var opened = 0, matched = 0;
+            var lockBoard = false;
+
+            function newRound() {
+                shuffle(answers);
+                $('.container').empty();
+                for (let i = 0; i < 16; i++) {
+                    $('.container').append('<button data-index="' + i + '">❓</button>');
+                }
+                addClickEvents();
+                resetGame();
+            }
+            
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            function addClickEvents() {
+                $('button').click(function () {
+                    if (lockBoard || $(this).text() !== "❓") return;
+                    opened++;
+                    $('#opened').text(opened);
+                    var index = $(this).data("index");
+                    $(this).text(answers[index]);
+                    
+                    if (!first) {
+                        first = answers[index];
+                        firstEl = $(this);
+                    } else {
+                        second = answers[index];
+                        secondEl = $(this);
+                        lockBoard = true;
+
+                        if (first === second) {
+                            firstEl.addClass('green');
+                            secondEl.addClass('green');
+                            matched++;
+                            $('#matched').text(matched);
+                            if (matched === 8) {
+                                $('#win-screen').fadeIn();
+                            }
+                            resetSelection();
+                        } else {
+                            firstEl.addClass('red');
+                            secondEl.addClass('red');
+                            setTimeout(() => {
+                                firstEl.removeClass('red').text("❓");
+                                secondEl.removeClass('red').text("❓");
+                                resetSelection();
+                            }, 800);
+                        }
+                    }
+                });
+            }
+
+            function resetSelection() {
+                first = second = null;
+                lockBoard = false;
+            }
+
+            function resetGame() {
+                opened = 0;
+                matched = 0;
+                $('#opened').text(0);
+                $('#matched').text(0);
+                lockBoard = false;
+                first = second = null;
+                $('#win-screen').hide();
+            }
+
+            $('#play-again').click(newRound);
+            newRound();
+        });
+    </script>
+</body>
+</html>
