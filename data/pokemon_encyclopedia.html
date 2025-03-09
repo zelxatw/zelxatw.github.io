@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Encyclopedia</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b81;
+            --primary-light: #ffedf2;
+            --primary-dark: #e6546a;
+            --success-color: #4CAF50;
+            --success-dark: #45a049;
+            --danger-color: #f44336;
+            --danger-dark: #d32f2f;
+            --info-color: #2196F3;
+            --info-dark: #1976D2;
+            --gray-100: #f9f9f9;
+            --gray-200: #f8f8f8;
+            --gray-300: #eee;
+            --shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: var(--gray-100);
+            text-align: center;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fff;
+            padding: 15px 30px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            height: 50px;
+            transition: transform var(--transition-speed);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav button {
+            background: none;
+            border: none;
+            font-family: "Poppins", sans-serif;
+            font-size: 1rem;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+
+        .nav button:hover {
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+
+        .nav .active {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav .active::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .content {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .page-title {
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-create {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: var(--info-color);
+            color: white;
+        }
+
+        .btn-create:hover {
+            background-color: var(--success-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-edit:hover {
+            background-color: var(--info-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-create:active, .btn-delete:active, .btn-edit:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: #333;
+            cursor: pointer;
+            position: relative;
+            padding: 15px;
+            font-weight: 600;
+            text-align: left;
+            transition: background-color var(--transition-speed);
+        }
+
+        th:hover {
+            background-color: #ffe0e9;
+        }
+
+        th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .sort-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            line-height: 10px;
+            text-align: center;
+        }
+
+        .sort-arrow span {
+            display: block;
+            height: 10px;
+            width: 100%;
+            text-align: center;
+            color: #aaa;
+            transition: color var(--transition-speed), transform 0.2s;
+        }
+
+        .sort-arrow span.active {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-300);
+            text-align: left;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            transition: all var(--transition-speed);
+        }
+
+        tbody tr:hover {
+            background-color: var(--gray-200);
+            transform: translateX(5px);
+        }
+
+        .pokemon-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .type {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .type-grass {
+            background-color: #78c850;
+            color: white;
+        }
+
+        .type-fire {
+            background-color: #f08030;
+            color: white;
+        }
+
+        .type-water {
+            background-color: #6890f0;
+            color: white;
+        }
+
+        .type-electric {
+            background-color: #f8d030;
+            color: #333;
+        }
+
+        .type-psychic {
+            background-color: #f85888;
+            color: white;
+        }
+
+        .type-fighting {
+            background-color: #c03028;
+            color: white;
+        }
+
+        .type-poison {
+            background-color: #a040a0;
+            color: white;
+        }
+
+        .type-ground {
+            background-color: #e0c068;
+            color: #333;
+        }
+
+        .type-flying {
+            background-color: #a890f0;
+            color: white;
+        }
+
+        .type-bug {
+            background-color: #a8b820;
+            color: white;
+        }
+
+        .type-rock {
+            background-color: #b8a038;
+            color: white;
+        }
+
+        .type-ghost {
+            background-color: #705898;
+            color: white;
+        }
+
+        .type-ice {
+            background-color: #98d8d8;
+            color: #333;
+        }
+
+        .type-dragon {
+            background-color: #7038f8;
+            color: white;
+        }
+
+        .type-dark {
+            background-color: #705848;
+            color: white;
+        }
+
+        .type-steel {
+            background-color: #b8b8d0;
+            color: #333;
+        }
+
+        .type-fairy {
+            background-color: #ee99ac;
+            color: white;
+        }
+
+        .type-normal {
+            background-color: #a8a878;
+            color: white;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .new-row {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        tr.selected {
+            background-color: var(--primary-light);
+            transform: translateX(5px);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .nav {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .content {
+                padding: 15px;
+                margin: 15px;
+            }
+
+            .action-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .action-buttons button {
+                margin: 5px;
+            }
+
+            td, th {
+                padding: 10px;
+            }
+
+            .sort-arrow {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .nav button {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="logo" src="/api/placeholder/150/50" alt="Pokemon Encyclopedia">
+        <div class="nav">
+            <button class="active"><i class="fas fa-home"></i> Main</button>
+            <button id="id-search"><i class="fas fa-search"></i> ID Search</button>
+            <button id="name-search"><i class="fas fa-font"></i> Name Search</button>
+            <button id="type-search"><i class="fas fa-tags"></i> Type Search</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2 class="page-title">Pokemon Collection</h2>
+        <div class="action-buttons">
+            <button class="btn-create" id="create"><i class="fas fa-plus"></i> Create</button>
+            <button class="btn-edit" id="edit"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-delete" id="delete"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index <div class="sort-arrow"><span class="up">▲</span><span class="down">▼</span></div></th>
+                    <th>Icon</th>
+                    <th>Name <div class="sort-arrow"><span class="up">▲</span><span class="down">▼</span></div></th>
+                    <th>Weight (kg) <div class="sort-arrow"><span class="up">▲</span><span class="down">▼</span></div></th>
+                    <th>Height (m) <div class="sort-arrow"><span class="up">▲</span><span class="down">▼</span></div></th>
+                    <th>Type <div class="sort-arrow"><span class="up">▲</span><span class="down">▼</span></div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table body will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var pokemons = [{
+            index: '001', name: 'Bulbasaur', height: 0.7, weight: 6.9, attr: 'Grass'
+        },
+        {
+            index: '002', name: 'Ivysaur', height: 1, weight: 13, attr: 'Grass'
+        },
+        {
+            index: '003', name: 'Venusaur', height: 2, weight: 100, attr: 'Grass'
+        },
+        {
+            index: '004', name: 'Charmander', height: 0.6, weight: 8.5, attr: 'Fire'
+        },
+        {
+            index: '005', name: 'Charmeleon', height: 1.1, weight: 19, attr: 'Fire'
+        }];
+        
+        var acquireKeysTable = ["name", "weight", "height", "attr"];
+        var acquireLabelsTable = ["Name", "Weight (kg)", "Height (m)", "Type"];
+
+        const availableTypes = [
+            'Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 
+            'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 
+            'Dark', 'Steel', 'Fairy'
+        ];
+
+        $(document).ready(function () {
+            refreshTable();
+
+            let sortState = {};
+            const columnKeys = ["index", "icon", "name", "weight", "height", "attr"];
+            let anyColumnSorted = false;
+
+            $("th").click(function () {
+                let column = $(this).index();
+                let columnKey = columnKeys[column];
+                
+                if (columnKey === "icon") return;
+                
+                let isNumeric = columnKey === "weight" || columnKey === "height";
+                
+                Object.keys(sortState).forEach(key => {
+                    if (key !== columnKey) {
+                        sortState[key] = null;
+                    }
+                });
+
+                $(".sort-arrow span").removeClass("active");
+                
+                if (!sortState[columnKey]) {
+                    sortState[columnKey] = "asc";
+                    $(this).find(".up").addClass("active");
+                    anyColumnSorted = true;
+                } else if (sortState[columnKey] === "asc") {
+                    sortState[columnKey] = "desc";
+                    $(this).find(".down").addClass("active");
+                    anyColumnSorted = true;
+                } else {
+                    sortState[columnKey] = null;
+                    anyColumnSorted = false;
+                }
+                
+                $("tbody").css({
+                    "opacity": "0.5",
+                    "transform": "translateY(-10px)",
+                    "transition": "opacity 0.3s, transform 0.3s"
+                });
+                
+                if (anyColumnSorted) {
+                    sortByColumn(column, columnKey, isNumeric);
+                } else {
+                    sortDefaultByIndex();
+                }
+                
+                setTimeout(function() {
+                    $("tbody").css({
+                        "opacity": "1",
+                        "transform": "translateY(0)"
+                    });
+                }, 100);
+            });
+
+            $('#create').click(function () {
+                let nextIndex = String(pokemons.length + 1).padStart(3, "0");
+                
+                let newPokemon = {
+                    index: nextIndex
+                };
+                
+                for (let i = 0; i < 4; i++) {
+                    let key = acquireKeysTable[i];
+                    let value;
+                    
+                    if (key === "attr") {
+                        value = promptForType();
+                        if (!value) {
+                            alert("Type is required");
+                            return;
+                        }
+                    } else {
+                        value = prompt(acquireLabelsTable[i]);
+                        
+                        if (key === "name" && !value) {
+                            alert("Name is required");
+                            return;
+                        } 
+                        else if ((key === "weight" || key === "height") && (!value || isNaN(value) || parseFloat(value) <= 0)) {
+                            alert("Please enter a valid " + acquireLabelsTable[i].toLowerCase());
+                            return;
+                        }
+                    }
+                    
+                    if (key === "weight" || key === "height") {
+                        newPokemon[key] = parseFloat(value);
+                    } else {
+                        newPokemon[key] = value;
+                    }
+                }
+
+                pokemons.push(newPokemon);
+                refreshTable();
+                
+                const $newRow = $(`tbody tr:last-child`);
+                highlightRow($newRow);
+            });
+
+            $('#edit').click(function() {
+                const selectedIndex = prompt("Enter the index of the Pokemon you want to edit:");
+                if (!selectedIndex) return;
+                
+                const pokemonToEdit = pokemons.find(p => p.index === selectedIndex);
+                if (!pokemonToEdit) {
+                    alert("Pokemon with index " + selectedIndex + " not found");
+                    return;
+                }
+                
+                for (let i = 0; i < 4; i++) {
+                    let key = acquireKeysTable[i];
+                    let currentValue = pokemonToEdit[key];
+                    let value;
+                    
+                    if (key === "attr") {
+                        value = promptForType(currentValue);
+                        if (value === null) continue; // Skip if canceled
+                        if (!value) {
+                            alert("Type is required");
+                            return;
+                        }
+                    } else {
+                        value = prompt(acquireLabelsTable[i], currentValue);
+                        if (value === null) continue; // Skip if canceled
+                        
+                        if (key === "name" && !value) {
+                            alert("Name is required");
+                            return;
+                        } 
+                        else if ((key === "weight" || key === "height") && (!value || isNaN(value) || parseFloat(value) <= 0)) {
+                            alert("Please enter a valid " + acquireLabelsTable[i].toLowerCase());
+                            return;
+                        }
+                    }
+                    
+                    if (key === "weight" || key === "height") {
+                        pokemonToEdit[key] = parseFloat(value);
+                    } else {
+                        pokemonToEdit[key] = value;
+                    }
+                }
+                
+                refreshTable();
+                
+                $(`tbody tr`).each(function() {
+                    if ($(this).children("td").eq(0).text() === selectedIndex) {
+                        highlightRow($(this), "#e6f7ff");
+                    }
+                });
+            });
+
+            $('#delete').click(function() {
+                const selectedIndex = prompt("Enter the index of the Pokemon you want to delete:");
+                if (!selectedIndex) return;
+                
+                const pokemonIndex = pokemons.findIndex(p => p.index === selectedIndex);
+                if (pokemonIndex === -1) {
+                    alert("Pokemon with index " + selectedIndex + " not found");
+                    return;
+                }
+                
+                if (confirm(`Are you sure you want to delete ${pokemons[pokemonIndex].name}?`)) {
+                    let $rowToDelete = null;
+                    $(`tbody tr`).each(function() {
+                        if ($(this).children("td").eq(0).text() === selectedIndex) {
+                            $rowToDelete = $(this);
+                        }
+                    });
+                    
+                    if ($rowToDelete) {
+                        $rowToDelete.css({
+                            "background-color": "#ffebeb",
+                            "transition": "all 0.5s"
+                        });
+                        
+                        setTimeout(function() {
+                            $rowToDelete.css({
+                                "opacity": "0",
+                                "transform": "translateX(30px)"
+                            });
+                            
+                            setTimeout(function() {
+                                pokemons.splice(pokemonIndex, 1);
+                                refreshTable();
+                            }, 500);
+                        }, 300);
+                    } else {
+                        pokemons.splice(pokemonIndex, 1);
+                        refreshTable();
+                    }
+                }
+            });
+
+            $(document).on('click', 'tbody tr', function() {
+                $(this).toggleClass('selected');
+                $(this).siblings().removeClass('selected');
+            });
+
+            $('.nav button').click(function() {
+                $('.nav button').removeClass('active');
+                $(this).addClass('active');
+            });
+            
+            $('#id-search').click(function() {
+                $('.nav button').removeClass('active');
+                $(this).addClass('active');
+                
+                const searchId = prompt("Enter Pokémon ID (e.g., 001):");
+                if (!searchId) return;
+                
+                refreshTable();
+                
+                const filteredPokemon = pokemons.filter(p => 
+                    p.index.toLowerCase().includes(searchId.toLowerCase())
+                );
+                
+                displaySearchResults(filteredPokemon, `ID Search: "${searchId}"`);
+            });
+            
+            $('#name-search').click(function() {
+                $('.nav button').removeClass('active');
+                $(this).addClass('active');
+                
+                const searchName = prompt("Enter Pokémon name:");
+                if (!searchName) return;
+                
+                refreshTable();
+                
+                const filteredPokemon = pokemons.filter(p => 
+                    p.name.toLowerCase().includes(searchName.toLowerCase())
+                );
+                
+                displaySearchResults(filteredPokemon, `Name Search: "${searchName}"`);
+            });
+            
+            $('#type-search').click(function() {
+                $('.nav button').removeClass('active');
+                $(this).addClass('active');
+                
+                const searchType = promptForType();
+                if (!searchType) return;
+                
+                refreshTable();
+                
+                const filteredPokemon = pokemons.filter(p => 
+                    p.attr.toLowerCase() === searchType.toLowerCase()
+                );
+                
+                displaySearchResults(filteredPokemon, `Type Search: "${searchType}"`);
+            });
+            
+            $('.nav button:first-child').click(function() {
+                $('.page-title').text('Pokemon Collection');
+                
+                $('#clear-search').remove();
+                
+                refreshTable();
+            });
+        });
+
+        function promptForType(currentType = "") {
+            let typeList = "";
+            
+            availableTypes.forEach((type, index) => {
+                typeList += `${index + 1}. ${type}\n`;
+            });
+            
+            const promptText = `Select a Pokemon type (1-${availableTypes.length}):\n${typeList}`;
+            const selection = prompt(promptText, currentType ? (availableTypes.indexOf(currentType) + 1).toString() : "");
+            
+            if (selection === null) return null;
+            
+            const typeIndex = parseInt(selection) - 1;
+            if (isNaN(typeIndex) || typeIndex < 0 || typeIndex >= availableTypes.length) {
+                const enteredType = selection.trim();
+                const exactTypeMatch = availableTypes.find(type => 
+                    type.toLowerCase() === enteredType.toLowerCase()
+                );
+                
+                if (exactTypeMatch) {
+                    return exactTypeMatch;
+                }
+                
+                alert("Please select a valid type number or name");
+                return promptForType(currentType);
+            }
+            
+            return availableTypes[typeIndex];
+        }
+
+        function refreshTable() {
+            $("tbody").empty();
+            
+            if (pokemons.length === 0) {
+                $("tbody").html(`
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <p>No Pokemon found</p>
+                                <p>Click the Create button to add a new Pokemon</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+            
+            for (let pokemon of pokemons) {
+                addPokemon(pokemon);
+            }
+        }
+
+        function addPokemon(pokemon) {
+            const typeClass = `type-${pokemon.attr.toLowerCase()}`;
+            let $row = $(`<tr>
+                <td>${pokemon.index}</td>
+                <td>
+                    <div class="pokemon-icon">${pokemon.index[2]}</div>
+                </td>
+                <td>${pokemon.name}</td>
+                <td>${pokemon.weight}</td>
+                <td>${pokemon.height}</td>
+                <td><span class="type ${typeClass}">${pokemon.attr}</span></td>
+                </tr>`);
+                
+            $("tbody").append($row);
+            return $row;
+        }
+
+        function highlightRow($row, color = "#e6ffe6") {
+            $row.addClass('new-row');
+            $row.css({
+                "background-color": color,
+                "transition": "background-color 1s"
+            });
+            
+            setTimeout(function() {
+                $row.css("background-color", "");
+            }, 1500);
+        }
+
+        function sortByColumn(column, columnKey, isNumeric) {
+            let rows = $("tbody tr").get();
+            
+            rows.sort(function (a, b) {
+                let A = $(a).children("td").eq(column).text();
+                let B = $(b).children("td").eq(column).text();
+                
+                if (isNumeric) {
+                    return sortState[columnKey] === "asc" ? 
+                        parseFloat(A) - parseFloat(B) : 
+                        parseFloat(B) - parseFloat(A);
+                } else {
+                    return sortState[columnKey] === "asc" ? 
+                        A.localeCompare(B) : 
+                        B.localeCompare(A);
+                }
+            });
+            
+            $("tbody").empty().append(rows);
+        }
+
+        function sortDefaultByIndex() {
+            let rows = $("tbody tr").get();
+            
+            rows.sort(function (a, b) {
+                let A = $(a).children("td").eq(0).text();
+                let B = $(b).children("td").eq(0).text();
+                return A.localeCompare(B);
+            });
+            
+            $("tbody").empty().append(rows);
+        }
+        
+        function displaySearchResults(results, searchTitle) {
+            $('.page-title').text(searchTitle);
+            
+            if (!$('#clear-search').length) {
+                $('.action-buttons').prepend(`
+                    <button class="btn-delete" id="clear-search" style="background-color: #888;">
+                        <i class="fas fa-times"></i> Clear Search
+                    </button>
+                `);
+                
+                $('#clear-search').click(function() {
+                    $('.page-title').text('Pokemon Collection');
+                    
+                    $(this).remove();
+                    
+                    refreshTable();
+                    
+                    $('.nav button').removeClass('active');
+                    $('.nav button:first-child').addClass('active');
+                });
+            }
+            
+            if (results.length === 0) {
+                $("tbody").html(`
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-search"></i>
+                                <p>No results found</p>
+                                <p>Try a different search term</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            } else {
+                $("tbody").empty();
+                
+                results.forEach(pokemon => {
+                    const $row = addPokemon(pokemon);
+                    highlightRow($row, "#e6f7ff");
+                });
+            }
+        }
+    </script>
+</body>
+</html>
