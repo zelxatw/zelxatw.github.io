@@ -438,7 +438,7 @@
 </head>
 <body>
     <div class="header">
-        <img class="logo" src="/api/placeholder/150/50" alt="Pokemon Encyclopedia">
+        <img class="logo" src="https://zelxatw.github.io/data/pokemon_logo.png" alt="Pokemon Encyclopedia">
         <div class="nav">
             <button class="active"><i class="fas fa-home"></i> Main</button>
             <button id="id-search"><i class="fas fa-search"></i> ID Search</button>
@@ -560,7 +560,7 @@
                     index: nextIndex
                 };
                 
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < acquireKeysTable.length; i++) {
                     let key = acquireKeysTable[i];
                     let value;
                     
@@ -593,7 +593,7 @@
                 pokemons.push(newPokemon);
                 refreshTable();
                 
-                const $newRow = $(`tbody tr:last-child`);
+                const $newRow = $("tbody tr:last-child");
                 highlightRow($newRow);
             });
 
@@ -607,7 +607,7 @@
                     return;
                 }
                 
-                for (let i = 0; i < 4; i++) {
+                for (let i = 0; i < acquireKeysTable.length; i++) {
                     let key = acquireKeysTable[i];
                     let currentValue = pokemonToEdit[key];
                     let value;
@@ -642,7 +642,7 @@
                 
                 refreshTable();
                 
-                $(`tbody tr`).each(function() {
+                $("tbody tr").each(function() {
                     if ($(this).children("td").eq(0).text() === selectedIndex) {
                         highlightRow($(this), "#e6f7ff");
                     }
@@ -661,7 +661,7 @@
                 
                 if (confirm(`Are you sure you want to delete ${pokemons[pokemonIndex].name}?`)) {
                     let $rowToDelete = null;
-                    $(`tbody tr`).each(function() {
+                    $("tbody tr").each(function() {
                         if ($(this).children("td").eq(0).text() === selectedIndex) {
                             $rowToDelete = $(this);
                         }
