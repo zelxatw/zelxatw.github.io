@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -757,6 +756,43 @@
         <span id="toast-message"></span>
     </div>
     <script>
+        let db;
+        let editingId = null;
+        const currentFilters = {
+            type: 'all',
+            dateFrom: null,
+            dateTo: null
+        };
+        const monthlyBudget = 1000;
+        const iconClassMap = {
+            'Food': 'category-food',
+            'Clothing': 'category-clothing',
+            'Living': 'category-living',
+            'Commuting': 'category-commuting',
+            'Learning': 'category-learning',
+            'Entertainment': 'category-entertainment',
+            'Other': 'category-other'
+        };
+        const emojiMap = {
+            'Food': '🍖',
+            'Clothing': '👕',
+            'Living': '🏠',
+            'Commuting': '🚌',
+            'Learning': '📖',
+            'Entertainment': '🎮',
+            'Other': '💰'
+        };
+        const categoryColors = {
+            'Food': '#ef4444',
+            'Clothing': '#3b82f6',
+            'Living': '#10b981',
+            'Commuting': '#f59e0b',
+            'Learning': '#8b5cf6',
+            'Entertainment': '#ec4899',
+            'Other': '#4b5563'
+        };
+        let pieChart, barChart;
+
         document.addEventListener('DOMContentLoaded', async function() {
             try {
                 // Initialize SQL.js
@@ -1254,11 +1290,9 @@
 
         // Clear all filters
         function clearFilters() {
-            currentFilters = {
-                type: 'all',
-                dateFrom: null,
-                dateTo: null
-            };
+            currentFilters.type = 'all';
+            currentFilters.dateFrom = null;
+            currentFilters.dateTo = null;
             // Reset UI
             document.querySelectorAll('.category').forEach(cat => {
                 cat.classList.remove('active');
