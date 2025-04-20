@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Satisfaction Survey | The Restaurant</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #ff4545;
+            --primary-hover: #e63939;
+            --text-color: #333;
+            --bg-color: #f2f2f2;
+            --card-bg: #fff;
+            --border-color: #ccc;
+            --input-bg: #fafafa;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --table-alt-row: #f9f9f9;
+            --table-border: #ddd;
+            --success-color: #4CAF50;
+            --transition-speed: 0.3s;
+        }
+
+        .dark-mode {
+            --primary-color: #ff6b6b;
+            --primary-hover: #ff8585;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #444;
+            --input-bg: #2c2c2c;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --table-alt-row: #252525;
+            --table-border: #444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        body {
+            padding: 40px 20px;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        #frontend, #info, table {
+            width: 100%;
+            box-sizing: border-box;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #info, #form, #success {
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        #backend, #success {
+            display: none;
+        }
+
+        #banner-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+            border-radius: 12px 12px 0 0;
+            background-color: #000;
+        }
+
+        #banner {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0.85;
+        }
+
+        .header-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+        }
+
+        .header-content h2 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        #form p {
+            margin-bottom: 20px;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        select, textarea, input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            box-sizing: border-box;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        select:focus, textarea:focus, input[type="email"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 69, 69, 0.2);
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+
+        .dark-mode select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .button:active {
+            transform: translateY(1px);
+        }
+
+        #submit {
+            display: block;
+            margin: 35px auto 10px;
+            min-width: 150px;
+        }
+
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        #toggleButton, #darkModeToggle {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #darkModeToggle svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--table-border);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-alt-row);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        #info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--input-bg);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 5px;
+        }
+
+        #success {
+            text-align: center;
+        }
+
+        #success h3 {
+            color: var(--success-color);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        #success p {
+            margin-bottom: 20px;
+        }
+
+        .required::after {
+            content: "*";
+            color: var(--primary-color);
+            margin-left: 4px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            #info, #form, #success {
+                padding: 20px;
+            }
+            
+            .header-content h2 {
+                font-size: 1.5rem;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        /* Rating stars */
+        .rating-container {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .rating-container input {
+            display: none;
+        }
+
+        .rating-container label {
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .dark-mode .rating-container label {
+            color: #444;
+        }
+
+        .rating-container label:hover,
+        .rating-container label:hover ~ label,
+        .rating-container input:checked ~ label {
+            color: var(--primary-color);
+        }
+
+        /* Progress animation */
+        .progress-container {
+            width: 100%;
+            height: 5px;
+            background-color: var(--input-bg);
+            margin: 30px 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: var(--primary-color);
+            transition: width 0.5s ease;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="toggle-container">
+        <button id="darkModeToggle">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+        </button>
+        <button id="toggleButton">Survey View</button>
+    </div>
+
+    <div id="frontend">
+        <div id="banner-container">
+            <img id="banner" src="logo/logo.jpg" alt="Restaurant Banner" />
+            <div class="header-content">
+                <h2>The Restaurant Experience</h2>
+                <p>Share your feedback and enter our prize draw</p>
+            </div>
+        </div>
+
+        <div id="form">
+            <h1>Customer Satisfaction Survey</h1>
+            <p>Help us improve by sharing your experience! Complete this survey to enter our prize draw for a chance to win a luxury cruise for two.</p>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <h3 class="required">How would you rate our service?</h3>
+            <div class="rating-container" id="serviceRating">
+                <input type="radio" id="service5" name="service" value="5" required/>
+                <label for="service5">★</label>
+                <input type="radio" id="service4" name="service" value="4" />
+                <label for="service4">★</label>
+                <input type="radio" id="service3" name="service" value="3" />
+                <label for="service3">★</label>
+                <input type="radio" id="service2" name="service" value="2" />
+                <label for="service2">★</label>
+                <input type="radio" id="service1" name="service" value="1" />
+                <label for="service1">★</label>
+            </div>
+
+            <h3 class="required">How would you rate the quality of your meal?</h3>
+            <div class="rating-container" id="mealRating">
+                <input type="radio" id="meal5" name="meal" value="5" required/>
+                <label for="meal5">★</label>
+                <input type="radio" id="meal4" name="meal" value="4" />
+                <label for="meal4">★</label>
+                <input type="radio" id="meal3" name="meal" value="3" />
+                <label for="meal3">★</label>
+                <input type="radio" id="meal2" name="meal" value="2" />
+                <label for="meal2">★</label>
+                <input type="radio" id="meal1" name="meal" value="1" />
+                <label for="meal1">★</label>
+            </div>
+
+            <h3 class="required">How would you rate the value for price?</h3>
+            <div class="rating-container" id="priceRating">
+                <input type="radio" id="price5" name="price" value="5" required/>
+                <label for="price5">★</label>
+                <input type="radio" id="price4" name="price" value="4" />
+                <label for="price4">★</label>
+                <input type="radio" id="price3" name="price" value="3" />
+                <label for="price3">★</label>
+                <input type="radio" id="price2" name="price" value="2" />
+                <label for="price2">★</label>
+                <input type="radio" id="price1" name="price" value="1" />
+                <label for="price1">★</label>
+            </div>
+
+            <h3 class="required">How did you hear about us?</h3>
+            <select id="source" required>
+                <option value="">Please select...</option>
+                <option value="Friends/Family">Friends or Family</option>
+                <option value="Online">Online Search</option>
+                <option value="Social">Social Media</option>
+                <option value="Flyers">Flyers or Ads</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <h3>Do you have any suggestions for improvement?</h3>
+            <textarea id="suggestion" rows="5" placeholder="Share your thoughts with us..."></textarea>
+
+            <h3 class="required">Email Address
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">We'll only use your email to contact you if you win the prize draw</span>
+                </span>
+            </h3>
+            <input type="email" id="email" placeholder="your.email@example.com" required />
+
+            <div class="checkbox-container">
+                <input id="subscribe" type="checkbox" />
+                <label for="subscribe">Yes, I'd like to receive exclusive promotions and updates</label>
+            </div>
+
+            <button id="submit" class="button">Submit Survey</button>
+        </div>
+
+        <div id="success">
+            <h3>Thank You For Your Feedback!</h3>
+            <p>Your survey has been successfully submitted. We truly value your input and will use it to improve our services.</p>
+            <p>Winners of the luxury cruise will be contacted via email within the next 30 days.</p>
+            <button id="backToForm" class="button">Fill Another Survey</button>
+        </div>
+    </div>
+
+    <div id="backend">
+        <div id="info">
+            <div class="stat-card">
+                <div class="stat-label">Total Responses</div>
+                <div class="stat-value" id="total">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Service Rating</div>
+                <div class="stat-value" id="serviceAvg">0.0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Meal Rating</div>
+                <div class="stat-value" id="mealAvg">0.0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Price Rating</div>
+                <div class="stat-value" id="valueAvg">0.0</div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Meal</th>
+                    <th>Price</th>
+                    <th>Source</th>
+                    <th>Suggestion</th>
+                    <th>Email</th>
+                    <th>Subscribed</th>
+                </tr>
+            </thead>
+            <tbody id="backendTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            initDatabase();
+            updateFormProgress();
+            
+            $('#submit').click(submitForm);
+            $('#backToForm').click(resetForm);
+            
+            $('#toggleButton').click(function () {
+                $('#frontend, #backend').toggle();
+                $(this).text(function (_, text) {
+                    return text === "Survey View" ? "Admin View" : "Survey View";
+                });
+                
+                if ($('#backend').is(':visible')) {
+                    loadFeedbackData();
+                }
+            });
+            
+            $('#darkModeToggle').click(toggleDarkMode);
+            
+            $('input, select, textarea').on('change input', updateFormProgress);
+            
+            if (localStorage.getItem('darkMode') === 'true') {
+                $('body').addClass('dark-mode');
+                updateDarkModeIcon(true);
+            }
+        });
+
+        function initDatabase() {
+            if (!localStorage.getItem('feedback')) {
+                localStorage.setItem('feedback', JSON.stringify([]));
+            }
+            console.log('Database initialized successfully');
+        }
+
+        function updateFormProgress() {
+            const requiredFields = ['service', 'meal', 'price', 'source', 'email'];
+            let completedFields = 0;
+            
+            if ($('input[name="service"]:checked').val()) {
+                completedFields++;
+            }
+            
+            if ($('input[name="meal"]:checked').val()) {
+                completedFields++;
+            }
+            
+            if ($('input[name="price"]:checked').val()) {
+                completedFields++;
+            }
+            
+            if ($("#source").val()) {
+                completedFields++;
+            }
+            
+            if ($("#email").val()) {
+                completedFields++;
+            }
+            
+            const progressPercentage = (completedFields / requiredFields.length) * 100;
+            $("#progressBar").css("width", progressPercentage + "%");
+        }
+
+        function toggleDarkMode() {
+            const isDarkMode = $('body').toggleClass('dark-mode').hasClass('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            updateDarkModeIcon(isDarkMode);
+        }
+
+        function updateDarkModeIcon(isDarkMode) {
+            if (isDarkMode) {
+                $('#darkModeToggle svg').html(`
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                `);
+            } else {
+                $('#darkModeToggle svg').html(`
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                `);
+            }
+        }
+
+        function submitForm() {
+            const serviceVal = $('input[name="service"]:checked').val();
+            const mealVal = $('input[name="meal"]:checked').val();
+            const priceVal = $('input[name="price"]:checked').val();
+            const emailVal = $("#email").val();
+            const sourceVal = $("#source").val();
+            
+            if (!serviceVal || !mealVal || !priceVal || !sourceVal || !emailVal) {
+                if (!serviceVal) $(".rating-container#serviceRating").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                if (!mealVal) $(".rating-container#mealRating").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                if (!priceVal) $(".rating-container#priceRating").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                if (!sourceVal) $("#source").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                if (!emailVal) $("#email").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                
+                return;
+            }
+            
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailVal)) {
+                $("#email").css('border-color', 'red').fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+                return;
+            }
+
+            const data = {
+                id: Date.now(),
+                service: parseInt(serviceVal),
+                meal: parseInt(mealVal),
+                price: parseInt(priceVal),
+                source: sourceVal,
+                suggestion: $("#suggestion").val() || "No suggestion provided",
+                email: emailVal,
+                subscribe: $("#subscribe").is(":checked") ? 1 : 0,
+                created_at: new Date().toISOString()
+            };
+
+            $("#submit").prop('disabled', true).text("Submitting...");
+
+            let feedbackData = JSON.parse(localStorage.getItem('feedback') || '[]');
+            
+            feedbackData.push(data);
+            
+            localStorage.setItem('feedback', JSON.stringify(feedbackData));
+            
+            console.log('Feedback submitted successfully');
+            loadFeedbackData();
+            
+            $("#form").fadeOut(300, function() {
+                $("#success").fadeIn(300);
+                $("#submit").prop('disabled', false).text("Submit Survey");
+            });
+        }
+
+        function resetForm() {
+            $('#serviceRating input').prop('checked', false);
+            $('#mealRating input').prop('checked', false);
+            $('#priceRating input').prop('checked', false);
+            $("#source").val("");
+            $("#suggestion").val("");
+            $("#email").val("");
+            $("#subscribe").prop('checked', false);
+            
+            $("#progressBar").css("width", "0%");
+            
+            $("#email").css('border-color', '');
+            
+            $("#success").fadeOut(300, function() {
+                $("#form").fadeIn(300);
+            });
+        }
+
+        function loadFeedbackData() {
+            const data = JSON.parse(localStorage.getItem('feedback') || '[]');
+            
+            data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            updateTable(data);
+        }
+
+        function updateTable(data) {
+            const tbody = $("#backendTable");
+            tbody.empty();
+            
+            let total = data.length;
+            let serviceSum = 0, mealSum = 0, priceSum = 0;
+
+            if (total > 0) {
+                data.forEach(entry => {
+                    serviceSum += parseInt(entry.service);
+                    mealSum += parseInt(entry.meal);
+                    priceSum += parseInt(entry.price);
+
+                    tbody.append(`<tr>
+                        <td>${entry.service}</td>
+                        <td>${entry.meal}</td>
+                        <td>${entry.price}</td>
+                        <td>${escapeHtml(entry.source)}</td>
+                        <td>${escapeHtml(entry.suggestion)}</td>
+                        <td>${escapeHtml(entry.email)}</td>
+                        <td>${entry.subscribe ? 'Yes' : 'No'}</td>
+                    </tr>`);
+                });
+
+                animateCounter("total", total);
+                animateCounter("serviceAvg", (serviceSum / total).toFixed(1));
+                animateCounter("mealAvg", (mealSum / total).toFixed(1));
+                animateCounter("valueAvg", (priceSum / total).toFixed(1));
+            } else {
+                $("#total").text("0");
+                $("#serviceAvg").text("0.0");
+                $("#mealAvg").text("0.0");
+                $("#valueAvg").text("0.0");
+                
+                tbody.append(`<tr><td colspan="7" style="text-align: center;">No survey responses yet</td></tr>`);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function animateCounter(id, endValue) {
+            const $element = $(`#${id}`);
+            const startValue = parseFloat($element.text()) || 0;
+            const duration = 1000;
+            const frameRate = 30;
+            const step = (endValue - startValue) / (duration / frameRate);
+            
+            let current = startValue;
+            const timer = setInterval(function() {
+                current += step;
+                
+                if ((step > 0 && current >= endValue) || (step < 0 && current <= endValue)) {
+                    clearInterval(timer);
+                    $element.text(endValue);
+                } else {
+                    $element.text(parseFloat(current).toFixed(1).replace(/\.0$/, ''));
+                }
+            }, frameRate);
+        }
+    </script>
+</body>
+</html>
