@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Knowledge King</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #FF5757;
+            --primary-light: #FF7676;
+            --primary-dark: #E13E3E;
+            --secondary-color: #2C7D90;
+            --secondary-light: #5AACBD;
+            --secondary-dark: #1A5B6A;
+            --correct-color: #15D47B;
+            --wrong-color: #FF2D6B;
+            --text-light: #ffffff;
+            --text-grey: #2b2f2f;
+            --text-dark: #333333;
+            --card-bg: #ffffff;
+            --card-shadow: 0px 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            background-attachment: fixed;
+            padding: 30px 20px;
+            text-align: center;
+            color: var(--text-light);
+            animation: fadeIn 1s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to right, #fff, #ffe3e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        .card {
+            max-width: 550px;
+            width: 100%;
+            padding: 40px 35px;
+            border-radius: 24px;
+            margin: 25px auto;
+            color: var(--secondary-color);
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: slideUp 0.7s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0px 18px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn {
+            background: var(--card-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            padding: 14px 32px;
+            margin: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(225, 62, 62, 0.1);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover, .btn:focus {
+            background: var(--primary-color);
+            color: var(--text-light);
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 8px 20px rgba(225, 62, 62, 0.4);
+        }
+
+        .btn:active {
+            transform: scale(0.98) translateY(0);
+            box-shadow: 0 2px 8px rgba(225, 62, 62, 0.3);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--text-light);
+            letter-spacing: 1px;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .option {
+            background-color: rgba(44, 125, 144, 0.05);
+            border: 2px solid var(--secondary-light);
+            color: var(--secondary-color);
+            border-radius: 16px;
+            padding: 18px;
+            margin: 14px 0;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:before {
+            content: "";
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--secondary-light);
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: rgba(90, 172, 189, 0.15);
+            transform: translateX(8px);
+            border-color: var(--secondary-color);
+        }
+
+        .option:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 125, 144, 0.2);
+        }
+
+        .red {
+            background-color: var(--wrong-color) !important;
+            border-color: var(--wrong-color) !important;
+            color: var(--text-light) !important;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translateX(-2px); }
+            20%, 80% { transform: translateX(3px); }
+            30%, 50%, 70% { transform: translateX(-5px); }
+            40%, 60% { transform: translateX(5px); }
+        }
+
+        .green {
+            background-color: var(--correct-color) !important;
+            border-color: var(--correct-color) !important;
+            color: var(--text-light) !important;
+            animation: pulse 1s ease;
+        }
+
+        .red:before, .green:before {
+            border-color: var(--text-light);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #counter {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-grey);
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #content {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+            line-height: 1.5;
+            transition: opacity 0.3s ease;
+        }
+
+        #result {
+            display: none;
+        }
+
+        #rank {
+            list-style-position: inside;
+            padding: 15px 0;
+            text-align: left;
+        }
+
+        #rank li {
+            font-size: 1.1rem;
+            padding: 14px 18px;
+            margin: 10px 0;
+            border-radius: 12px;
+            background: rgba(90, 154, 168, 0.1);
+            animation: fadeIn 0.5s ease forwards;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        #rank li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #rank li:nth-child(1) {
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            color: #333;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+            border-left-color: #FFA000;
+        }
+
+        #rank li:nth-child(2) {
+            background: linear-gradient(45deg, #C0C0C0, #E0E0E0);
+            color: #333;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(192, 192, 192, 0.3);
+            border-left-color: #A0A0A0;
+        }
+
+        #rank li:nth-child(3) {
+            background: linear-gradient(45deg, #CD7F32, #D2691E);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(210, 105, 30, 0.3);
+            border-left-color: #8B4513;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 10px;
+            margin: 25px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--secondary-light), var(--primary-light));
+            transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        #score {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--secondary-dark);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            background: rgba(44, 125, 144, 0.05);
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        .result-stat {
+            text-align: center;
+            position: relative;
+        }
+
+        .result-stat:first-child::after {
+            content: "";
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 80%;
+            background: rgba(44, 125, 144, 0.2);
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: block;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            .card {
+                padding: 30px 25px;
+            }
+            .option {
+                padding: 14px;
+                font-size: 1rem;
+            }
+            #content {
+                font-size: 1.3rem;
+            }
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            .result-summary {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .result-stat:first-child::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>The Knowledge King</h1>
+            <p class="tagline">Test your knowledge, challenge your mind, and become the ultimate Knowledge King!</p>
+        </div>
+        
+        <div class="card" id="quiz-card">
+            <p id="counter">Press "Start" To Begin Your Journey!</p>
+            <p id="content">It's said that using 100% of your brain lets you master all knowledge. Train yourself and challenge the world's strongest!</p>
+            
+            <div class="progress-container" id="progress-container" style="display: none;">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <button id="a" class="option" style="display:none;"></button>
+            <button id="b" class="option" style="display:none;"></button>
+            <button id="c" class="option" style="display:none;"></button>
+            <button id="d" class="option" style="display:none;"></button>
+        </div>
+        
+        <div class="actions">
+            <button id="start" class="btn btn-primary">Start Quiz</button>
+            <button id="next" class="btn" style="display:none;">Next Question</button>
+            <button id="get-result" class="btn" style="display:none;">Show Results</button>
+        </div>
+        
+        <div id="result" class="card">
+            <p id="score">Your Results</p>
+            
+            <div class="result-summary">
+                <div class="result-stat">
+                    <span class="result-value" id="correct-answers">0</span>
+                    <span class="result-label">Correct Answers</span>
+                </div>
+                <div class="result-stat">
+                    <span class="result-value" id="accuracy">0%</span>
+                    <span class="result-label">Accuracy</span>
+                </div>
+            </div>
+            
+            <h3>Leaderboard</h3>
+            <ol id="rank"></ol>
+            
+            <button id="play-again" class="btn btn-primary" style="margin-top: 20px;">Play Again</button>
+        </div>
+    </div>
+    <script>
+        const question = [
+          {
+            "content": "Water freezes below what temperature in Celsius?",
+            "a": "20°C",
+            "b": "30°C", 
+            "c": "0°C",
+            "d": "10°C",
+            "answer": "c"
+          },
+          {
+            "content": "How many natural satellites does Earth currently have?",
+            "a": "Hundreds of thousands",
+            "b": "Uncountable",
+            "c": "One",
+            "d": "Millions",
+            "answer": "c"
+          },
+          {
+            "content": "Which celestial body was reclassified and no longer considered a planet?",
+            "a": "Neptune",
+            "b": "Saturn",
+            "c": "Pluto",
+            "d": "Uranus",
+            "answer": "c"
+          },
+          {
+            "content": "How many faces does a triangular pyramid have?",
+            "a": "3",
+            "b": "6",
+            "c": "5",
+            "d": "4",
+            "answer": "d"
+          },
+          {
+            "content": "How many faces does a triangular prism have?",
+            "a": "5",
+            "b": "4",
+            "c": "3",
+            "d": "2",
+            "answer": "a"
+          },
+          {
+            "content": "How many faces does a quadrangular prism have?",
+            "a": "6",
+            "b": "5",
+            "c": "4",
+            "d": "3",
+            "answer": "a"
+          },
+          
+          {
+            "content": "'The Big Apple' refers to which city?",
+            "a": "Paris",
+            "b": "New York",
+            "c": "Tokyo",
+            "d": "Hong Kong",
+            "answer": "b"
+          },
+          {
+            "content": "The Normandy landings during World War II occurred in which country?",
+            "a": "France",
+            "b": "United States",
+            "c": "Spain", 
+            "d": "Netherlands",
+            "answer": "a"
+          },
+          {
+            "content": "What is the known maximum depth of the Earth's oceans?",
+            "a": "5500 meters",
+            "b": "22000 meters",
+            "c": "11000 meters",
+            "d": "8800 meters",
+            "answer": "c"
+          },
+          
+          {
+            "content": "What is the largest feline species in the world?",
+            "a": "Bengal tiger",
+            "b": "Siberian tiger",
+            "c": "African lion",
+            "d": "Jaguar",
+            "answer": "b"
+          },
+          {
+            "content": "Why do snakes frequently stick out their tongues?",
+            "a": "To cool down",
+            "b": "To find prey",
+            "c": "To aid movement",
+            "d": "To help breathing",
+            "answer": "b"
+          },
+          {
+            "content": "Which vitamin helps blood clot?",
+            "a": "Vitamin D",
+            "b": "Vitamin C",
+            "c": "Vitamin A",
+            "d": "Vitamin K",
+            "answer": "d"
+          },
+          {
+            "content": "What is the main component of gastric acid?",
+            "a": "Hydrochloric acid",
+            "b": "Sulfuric acid",
+            "c": "Citric acid",
+            "d": "Amino acid",
+            "answer": "a"
+          },
+          {
+            "content": "Which fruit is known as the 'King of Fruits'?",
+            "a": "Orange",
+            "b": "Apple",
+            "c": "Durian",
+            "d": "Watermelon",
+            "answer": "c"
+          },
+          
+          {
+            "content": "In the Harry Potter series, what do you call a non-magical person?",
+            "a": "Cucumber",
+            "b": "Pumpkin",
+            "c": "Muggle",
+            "d": "Loofah",
+            "answer": "c"
+          },
+          {
+            "content": "Who composed the opera 'The Marriage of Figaro'?",
+            "a": "Mozart",
+            "b": "Beethoven",
+            "c": "Bach",
+            "d": "Tchaikovsky",
+            "answer": "a"
+          },
+          {
+            "content": "What is the chemical formula for water?", 
+            "a": "H2O",
+            "b": "CO2",
+            "c": "O2",
+            "d": "H2O2",
+            "answer": "a"
+          },
+          {
+            "content": "Which of these is NOT a primary color?",
+            "a": "Red",
+            "b": "Blue",
+            "c": "Green",
+            "d": "Yellow",
+            "answer": "d"
+          },
+          {
+            "content": "How many sides does a hexagon have?",
+            "a": "4",
+            "b": "5",
+            "c": "6",
+            "d": "8",
+            "answer": "c"
+          },
+          {
+            "content": "Which planet is closest to the Sun?",
+            "a": "Earth",
+            "b": "Venus",
+            "c": "Mars",
+            "d": "Mercury",
+            "answer": "d"
+          },
+          {
+            "content": "What is 7 × 8?",
+            "a": "54",
+            "b": "56",
+            "c": "48",
+            "d": "64",
+            "answer": "b"
+          },
+          
+          {
+            "content": "Which of these is NOT a continent?",
+            "a": "Europe",
+            "b": "Africa",
+            "c": "Greenland",
+            "d": "Australia",
+            "answer": "c"
+          },
+          {
+            "content": "Which ocean is the largest?",
+            "a": "Atlantic",
+            "b": "Indian",
+            "c": "Arctic",
+            "d": "Pacific",
+            "answer": "d"
+          },
+          {
+            "content": "In which continent is the Sahara Desert located?",
+            "a": "Africa",
+            "b": "Asia",
+            "c": "South America",
+            "d": "Australia",
+            "answer": "a"
+          },
+          
+          {
+            "content": "Which of these animals lays eggs?",
+            "a": "Dolphin",
+            "b": "Penguin",
+            "c": "Elephant",
+            "d": "Monkey",
+            "answer": "b"
+          },
+          {
+            "content": "What covers most of Earth's surface?",
+            "a": "Land",
+            "b": "Ice",
+            "c": "Water",
+            "d": "Forest",
+            "answer": "c"
+          },
+          
+          {
+            "content": "Which of these is used to write on a blackboard?",
+            "a": "Pen",
+            "b": "Pencil",
+            "c": "Marker",
+            "d": "Chalk",
+            "answer": "d"
+          },
+          {
+            "content": "How many hours are in a day?",
+            "a": "12",
+            "b": "24",
+            "c": "36",
+            "d": "48",
+            "answer": "b"
+          },
+          {
+            "content": "What is the most common blood type in humans?",
+            "a": "O",
+            "b": "A",
+            "c": "B",
+            "d": "AB",
+            "answer": "a"
+          },
+          {
+            "content": "Which of these is NOT a season?",
+            "a": "Winter",
+            "b": "Autumn",
+            "c": "Monsoon",
+            "d": "Summer",
+            "answer": "c"
+          },
+          {
+            "content": "What is the most spoken language in the world?",
+            "a": "English",
+            "b": "Spanish",
+            "c": "Mandarin Chinese",
+            "d": "Hindi",
+            "answer": "c"
+          },
+          {
+            "content": "How many sides does a triangle have?",
+            "a": "2",
+            "b": "3",
+            "c": "4",
+            "d": "5",
+            "answer": "b"
+          },
+          {
+            "content": "What is the main ingredient in bread?",
+            "a": "Flour",
+            "b": "Sugar",
+            "c": "Eggs",
+            "d": "Milk",
+            "answer": "a"
+          },
+          {
+            "content": "Which of these is NOT a color of the rainbow?",
+            "a": "Red",
+            "b": "Brown",
+            "c": "Blue",
+            "d": "Green",
+            "answer": "b"
+          },
+          {
+            "content": "What is 2 + 2?",
+            "a": "3",
+            "b": "4",
+            "c": "5",
+            "d": "6",
+            "answer": "b"
+          },
+          {
+            "content": "What organ pumps blood through the body?",
+            "a": "Liver",
+            "b": "Lung",
+            "c": "Heart",
+            "d": "Brain",
+            "answer": "c"
+          },
+          {
+            "content": "Which animal is known as 'man's best friend'?",
+            "a": "Cat",
+            "b": "Horse",
+            "c": "Dog",
+            "d": "Rabbit",
+            "answer": "c"
+          },
+          {
+            "content": "How many days are in a week?",
+            "a": "5",
+            "b": "6",
+            "c": "7",
+            "d": "8",
+            "answer": "c"
+          },
+          {
+            "content": "Which of these is a fruit?",
+            "a": "Carrot",
+            "b": "Potato",
+            "c": "Apple",
+            "d": "Broccoli",
+            "answer": "c"
+          },
+          {
+            "content": "What is the capital of France?",
+            "a": "Rome",
+            "b": "Berlin",
+            "c": "London",
+            "d": "Paris",
+            "answer": "d"
+          }
+        ];
+        
+        let shuffledQuestions = [];
+        let answer;
+        let scoreVal = 0;
+        let counter = 0;
+        let totalQuestions = 10;
+        let questionsAnswered = 0;
+        let userName = "";
+        let userAnswers = [];
+        
+        $(document).ready(function () {
+            $("#start").click(start);
+            $(".option").click(answerQuestion);
+            $("#next").click(showQuestion);
+            $("#get-result").click(gameover);
+            $("#play-again").click(() => location.reload());
+            
+            if (typeof DB === 'undefined') {
+                window.DB = {
+                    table: function(name) {
+                        return {
+                            create: function(data) {
+                                console.log("Creating record:", data);
+                                let records = JSON.parse(localStorage.getItem('quiz_records') || '[]');
+                                records.push(data);
+                                localStorage.setItem('quiz_records', JSON.stringify(records));
+                            },
+                            read: function(query, options, callback) {
+                                console.log("Reading records with options:", options);
+                                // Mock implementation
+                                let records = JSON.parse(localStorage.getItem('quiz_records') || '[]');
+                                records.sort((a, b) => b.score - a.score);
+                                callback(records);
+                            }
+                        };
+                    }
+                };
+            }
+        });
+        
+        function start() {
+            userName = prompt("Enter your name to become The Knowledge King:", "");
+            
+            if (!userName || userName.trim() === "") {
+                userName = "Anonymous Player " + Math.floor(Math.random() * 1000);
+            }
+            
+            $("#start").hide();
+            $(".option").show();
+            $("#progress-container").show();
+            
+            shuffledQuestions = [...question].sort(() => Math.random() - 0.5);
+            shuffledQuestions = shuffledQuestions.slice(0, totalQuestions);
+            
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            $("#next").hide();
+            $(".option").removeClass("red green");
+            $(".option").attr("disabled", false);
+            
+            if (counter >= shuffledQuestions.length) {
+                gameover();
+                return;
+            }
+            
+            var q = shuffledQuestions[counter];
+            counter += 1;
+            
+            const progressPercentage = (counter / totalQuestions) * 100;
+            $("#progress-bar").css("width", progressPercentage + "%");
+            
+            $("#counter").text(`Question ${counter} of ${totalQuestions}`);
+            $("#content").text(q.content);
+            $("#a").text(q.a);
+            $("#b").text(q.b);
+            $("#c").text(q.c);
+            $("#d").text(q.d);
+            
+            answer = q.answer;
+            
+            $("#content").css("opacity", "0");
+            $(".option").css("opacity", "0");
+            
+            setTimeout(() => {
+                $("#content").css("opacity", "1");
+                $(".option").css("opacity", "1");
+            }, 100);
+        }
+        
+        function answerQuestion() {
+            questionsAnswered++;
+            var option = $(this).attr("id");
+            $(".option").attr("disabled", true);
+            
+            userAnswers.push({
+                question: $("#content").text(),
+                userAnswer: option,
+                correctAnswer: answer,
+                isCorrect: option === answer
+            });
+        
+            if (option === answer) {
+                scoreVal += 1;
+                $(this).addClass("green");
+            } else {
+                $(this).addClass("red");
+                $(`#${answer}`).addClass("green");
+            }
+        
+            if (counter < totalQuestions) {
+                $("#next").show();
+            } else {
+                $("#get-result").show();
+            }
+        }
+        
+        function gameover() {
+            const record = DB.table("record");
+            record.create({
+                name: userName,
+                score: scoreVal,
+                date: new Date().toLocaleDateString()
+            });
+            
+            record.read({}, {
+                $orderBy: {
+                    score: -1
+                }
+            }, showResult);
+        }
+        
+        function showResult(data) {
+            $("#quiz-card").hide();
+            $("#next").hide();
+            $("#get-result").hide();
+            $("#result").show();
+            
+            const accuracy = questionsAnswered > 0 
+                ? Math.round((scoreVal / questionsAnswered) * 100) 
+                : 0;
+            
+            $("#score").text(`${userName}'s Results`);
+            $("#correct-answers").text(scoreVal);
+            $("#accuracy").text(accuracy + "%");
+            
+            $("#rank").empty();
+            
+            data.forEach((d, index) => {
+                const listItem = $(`<li style="animation-delay: ${index * 0.1}s">
+                    <span>${d.name}</span>
+                    <span>${d.score} points</span>
+                </li>`);
+                $("#rank").append(listItem);
+            });
+            
+            $("#play-again").show();
+        }
+    </script>
+</body>
+</html>
