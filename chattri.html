@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chattri - Modern Forum</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-secondary { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .btn-success { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #8b4513; }
+        .btn-info { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #2d3748; }
+        .btn-dark { background: linear-gradient(135deg, #2c3e50, #34495e); color: white; }
+        .btn-light { background: rgba(255, 255, 255, 0.9); color: #2d3748; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 120px);
+        }
+
+        .page {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card Styles */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Filter Buttons */
+        .filter-container {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #2d3748;
+            transform: scale(1.05);
+        }
+
+        /* Post Styles */
+        .post-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .post-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: white;
+        }
+
+        .post-tag.news { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .post-tag.love { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .post-tag.gossip { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .post-tag.shopping { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .post-tag.jokes { background: linear-gradient(135deg, #eab308, #ca8a04); }
+        .post-tag.chat { background: linear-gradient(135deg, #10b981, #059669); }
+
+        .post-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a202c;
+            flex: 1;
+        }
+
+        .post-author {
+            color: #718096;
+            font-size: 0.875rem;
+        }
+
+        .post-content {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .post-date {
+            color: #a0aec0;
+            font-size: 0.8rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Comment Styles */
+        .comment-item {
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .comment-content {
+            margin: 0.5rem 0;
+            color: #4a5568;
+        }
+
+        .comment-date {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .comment-input {
+            flex: 1;
+        }
+
+        /* Dialog Styles */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dialog {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 100px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .dialog-overlay.show .dialog {
+            transform: scale(1);
+        }
+
+        .dialog-message {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .filter-container {
+                justify-content: center;
+            }
+
+            .post-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .comment-form {
+                flex-direction: column;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo" id="goHome">Chattri</div>
+                <div class="nav-buttons">
+                    <button id="signInBtn" class="btn btn-primary sign-btn">Sign In</button>
+                    <button id="signUpBtn" class="btn btn-secondary sign-btn">Sign Up</button>
+                    <button id="myAccount" class="btn btn-info" style="display: none;">My Account</button>
+                    <button id="logoutBtn" class="btn btn-light" style="display: none;">Logout</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Home Page -->
+            <div id="homePage" class="page active">
+                <div class="filter-container">
+                    <button class="filter-btn active js-filter" data-type="All">All Posts</button>
+                    <button class="filter-btn js-filter" data-type="News">📰 News</button>
+                    <button class="filter-btn js-filter" data-type="Love">❤️ Love</button>
+                    <button class="filter-btn js-filter" data-type="Gossip">🗣️ Gossip</button>
+                    <button class="filter-btn js-filter" data-type="Shopping">🛍️ Shopping</button>
+                    <button class="filter-btn js-filter" data-type="Jokes">😂 Jokes</button>
+                    <button class="filter-btn js-filter" data-type="Chat">💬 Chat</button>
+                    <button class="btn btn-success js-show-form-page" style="margin-left: auto;">✨ Create Post</button>
+                </div>
+                <div id="postList"></div>
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <h3>No posts found</h3>
+                    <p>Be the first to create a post!</p>
+                </div>
+            </div>
+
+            <!-- Create Post Page -->
+            <div id="formPage" class="page">
+                <div class="card">
+                    <h2 style="margin-bottom: 1.5rem; text-align: center;">Create New Post</h2>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="formType" class="form-select">
+                            <option value="">Select a category</option>
+                            <option value="News">📰 News</option>
+                            <option value="Love">❤️ Love</option>
+                            <option value="Gossip">🗣️ Gossip</option>
+                            <option value="Shopping">🛍️ Shopping</option>
+                            <option value="Jokes">😂 Jokes</option>
+                            <option value="Chat">💬 Chat</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input id="formTitle" type="text" class="form-input" placeholder="Enter your post title...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea id="formContent" class="form-textarea" placeholder="Share your thoughts..."></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-light js-show-post-list">Cancel</button>
+                        <button class="btn btn-success js-create-post">Publish Post</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Post Page -->
+            <div id="postPage" class="page">
+                <div style="margin-bottom: 1.5rem;">
+                    <button class="btn btn-light js-show-post-list">← Back to Posts</button>
+                </div>
+                
+                <div id="postItem" class="card">
+                    <div class="post-header">
+                        <span class="post-tag" id="postType"></span>
+                        <div class="post-title" id="postTitle"></div>
+                        <div class="post-author">by <span id="postAuthor"></span></div>
+                    </div>
+                    <div class="post-content" id="postContent"></div>
+                    <div class="post-date" id="postDate"></div>
+                </div>
+
+                <h3 class="section-title" id="commentLength">0 Comments</h3>
+
+                <div class="card">
+                    <div class="comment-form">
+                        <div class="comment-input">
+                            <input type="text" id="commentInput" class="form-input" placeholder="Share your thoughts...">
+                        </div>
+                        <button class="btn btn-primary js-create-comment">Comment</button>
+                    </div>
+                </div>
+
+                <div id="commentList"></div>
+            </div>
+
+            <!-- Sign In Page -->
+            <div id="signInPage" class="page">
+                <div class="card" style="max-width: 400px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 1.5rem;">Welcome Back</h2>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input id="userAccount" type="text" class="form-input" placeholder="Enter your username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input id="userPassword" type="password" class="form-input" placeholder="Enter your password">
+                    </div>
+                    <button id="signIn" class="btn btn-primary" style="width: 100%;">Sign In</button>
+                </div>
+            </div>
+
+            <!-- Sign Up Page -->
+            <div id="signUpPage" class="page">
+                <div class="card" style="max-width: 400px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 1.5rem;">Join Chattri</h2>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input id="newAccount" type="text" class="form-input" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input id="newPassword" type="password" class="form-input" placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input id="confirmPassword" type="password" class="form-input" placeholder="Confirm your password">
+                    </div>
+                    <button id="signUp" class="btn btn-success" style="width: 100%;">Create Account</button>
+                </div>
+            </div>
+            
+            <!-- My Account Page -->
+            <div id="myAccPage" class="page">
+                <div class="card" style="max-width: 500px; margin: 0 auto;">
+                    <h2 style="text-align: center; margin-bottom: 1.5rem;">My Account</h2>
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" id="userName" class="form-input" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="newPass" class="form-input" placeholder="Enter new password (optional)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" id="confirmPass" class="form-input" placeholder="Confirm new password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Member Since</label>
+                        <input type="text" id="joinDate" class="form-input" disabled>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-light" id="backToHome">Back</button>
+                        <button class="btn btn-success" id="saveChanges">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Dialog -->
+    <div id="dialogOverlay" class="dialog-overlay">
+        <div class="dialog">
+            <div id="dialogMessage" class="dialog-message"></div>
+            <button class="btn btn-primary" onclick="hideDialog()">OK</button>
+        </div>
+    </div>
+    
+    <script>
+        // MySQL Database Interface
+        class MySQLDB {
+            constructor() {
+                this.apiUrl = '/api'; // Replace with your actual API endpoint
+            }
+
+            // Posts table operations
+            async getPosts(filter = {}) {
+                try {
+                    const params = new URLSearchParams(filter);
+                    const response = await fetch(`${this.apiUrl}/posts?${params}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching posts:', error);
+                    return this.getMockPosts(filter);
+                }
+            }
+
+            async createPost(postData) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/posts`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(postData)
+                    });
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error creating post:', error);
+                    return this.createMockPost(postData);
+                }
+            }
+
+            async getPost(id) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/posts/${id}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching post:', error);
+                    return null;
+                }
+            }
+
+            // Comments table operations
+            async getComments(postId) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/posts/${postId}/comments`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching comments:', error);
+                    return this.getMockComments(postId);
+                }
+            }
+
+            async createComment(commentData) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(commentData)
+                    });
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error creating comment:', error);
+                    return this.createMockComment(commentData);
+                }
+            }
+
+            // Users/Accounts table operations
+            async authenticate(username, password) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error authenticating:', error);
+                    return this.mockAuthenticate(username, password);
+                }
+            }
+
+            async register(userData) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/auth/register`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData)
+                    });
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error registering:', error);
+                    return this.mockRegister(userData);
+                }
+            }
+
+            async updateUser(userId, userData) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(userData)
+                    });
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                    return { success: true };
+                }
+            }
+
+            // Mock data for demonstration (remove when connecting to real MySQL)
+            getMockPosts(filter = {}) {
+                const posts = [
+                    {
+                        id: 1,
+                        type: 'News',
+                        title: 'Welcome to Chattri!',
+                        content: 'This is a modern forum built with MySQL database. Share your thoughts and connect with others!',
+                        author: 'Admin',
+                        date: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        type: 'Chat',
+                        title: 'Hello Everyone!',
+                        content: 'Just wanted to say hi to the community. Looking forward to great discussions!',
+                        author: 'User123',
+                        date: new Date(Date.now() - 3600000).toISOString()
+                    }
+                ];
+
+                if (filter.type && filter.type !== 'All') {
+                    return posts.filter(post => post.type === filter.type);
+                }
+                return posts;
+            }
+
+            createMockPost(postData) {
+                return { id: Date.now(), ...postData, success: true };
+            }
+
+            getMockComments(postId) {
+                return [
+                    {
+                        id: 1,
+                        postId: postId,
+                        author: 'CommentUser',
+                        content: 'Great post! Thanks for sharing.',
+                        date: new Date().toISOString()
+                    }
+                ];
+            }
+
+            createMockComment(commentData) {
+                return { id: Date.now(), ...commentData, success: true };
+            }
+
+            mockAuthenticate(username, password) {
+                if (username === 'demo' && password === 'Demo123!') {
+                    return {
+                        success: true,
+                        user: {
+                            id: 1,
+                            username: 'demo',
+                            joinDate: new Date('2024-01-01').toISOString()
+                        }
+                    };
+                }
+                return { success: false, message: 'Invalid credentials' };
+            }
+
+            mockRegister(userData) {
+                return {
+                    success: true,
+                    message: 'Account created successfully!'
+                };
+            }
+        }
+
+        // Initialize database
+        const db = new MySQLDB();
+        let currentUser = null;
+        let currentPostId = null;
+
+        // Category colors
+        const categoryColor = {
+            News: "news",
+            Love: "love",
+            Gossip: "gossip",
+            Shopping: "shopping",
+            Jokes: "jokes",
+            Chat: "chat"
+        };
+
+        // Utility functions
+        function showPage(pageId) {
+            $('.page').removeClass('active');
+            $(`#${pageId}`).addClass('active');
+        }
+
+        function showDialog(message) {
+            $('#dialogMessage').text(message);
+            $('#dialogOverlay').addClass('show').show();
+        }
+
+        function hideDialog() {
+            $('#dialogOverlay').removeClass('show').hide();
+        }
+
+        function checkPassword(password) {
+            const minLength = 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasDigit = /[0-9]/.test(password);
+            return password && password.length >= minLength && hasUppercase && hasLowercase && hasDigit;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' at ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Posts functions
+        async function loadPosts(filter = {}) {
+            const posts = await db.getPosts(filter);
+            updatePostList(posts);
+        }
+
+        function updatePostList(posts) {
+            const postList = $("#postList");
+            const emptyState = $("#emptyState");
+            
+            postList.empty();
+            
+            if (posts.length === 0) {
+                emptyState.show();
+                return;
+            }
+            
+            emptyState.hide();
+            posts.forEach(post => {
+                postList.append(`
+                    <div class="post-item card" data-id="${post.id}">
+                        <div class="post-header">
+                            <span class="post-tag ${categoryColor[post.type]}">${post.type}</span>
+                            <div class="post-title">${post.title}</div>
+                            <div class="post-author">by ${post.author}</div>
+                        </div>
+                        <div class="post-content">${post.content}</div>
+                        <div class="post-date">${formatDate(post.date)}</div>
+                    </div>
+                `);
+            });
+        }
+
+        // Comments functions
+        async function loadComments(postId) {
+            const comments = await db.getComments(postId);
+            updateCommentList(comments);
+        }
+
+        function updateCommentList(comments) {
+            const commentList = $("#commentList");
+            const commentLength = $("#commentLength");
+            
+            commentList.empty();
+            
+            const count = comments.length;
+            commentLength.text(`${count} Comment${count === 1 ? '' : 's'}`);
+            
+            comments.forEach(comment => {
+                commentList.append(`
+                    <div class="comment-item card">
+                        <div class="comment-author">${comment.author}</div>
+                        <div class="comment-content">${comment.content}</div>
+                        <div class="comment-date">${formatDate(comment.date)}</div>
+                    </div>
+                `);
+            });
+        }
+
+        // Authentication functions
+        function updateAuthUI() {
+            if (currentUser) {
+                $("#signInBtn, #signUpBtn").hide();
+                $("#myAccount, #logoutBtn").show();
+            } else {
+                $("#signInBtn, #signUpBtn").show();
+                $("#myAccount, #logoutBtn").hide();
+            }
+        }
+
+        // Event handlers
+        $(document).ready(function() {
+            // Navigation
+            $("#goHome").click(() => {
+                showPage('homePage');
+                loadPosts();
+            });
+
+            $(".js-show-post-list").click(() => {
+                showPage('homePage');
+                loadPosts();
+            });
+
+            $(".js-show-form-page").click(() => {
+                if (!currentUser) {
+                    showDialog("Please sign in to create a post.");
+                    return;
+                }
+                showPage('formPage');
+            });
+
+            // Filter posts
+            $(".js-filter").click(function() {
+                $(".js-filter").removeClass('active');
+                $(this).addClass('active');
+                
+                const type = $(this).data('type');
+                if (type === 'All') {
+                    loadPosts();
+                } else {
+                    loadPosts({ type });
+                }
+            });
+
+            // Create post
+            $(".js-create-post").click(async function() {
+                const type = $("#formType").val();
+                const title = $("#formTitle").val().trim();
+                const content = $("#formContent").val().trim();
+
+                if (!type) return showDialog("Please select a category.");
+                if (!title) return showDialog("Title cannot be empty.");
+                if (!content) return showDialog("Content cannot be empty.");
+
+                const postData = {
+                    type,
+                    title,
+                    content,
+                    author: currentUser.username,
+                    date: new Date().toISOString()
+                };
+
+                const result = await db.createPost(postData);
+                if (result.success) {
+                    $("#formType, #formTitle, #formContent").val("");
+                    showPage('homePage');
+                    loadPosts();
+                    showDialog("Post created successfully!");
+                } else {
+                    showDialog("Failed to create post. Please try again.");
+                }
+            });
+
+            // View post
+            $(document).on("click", ".post-item", async function() {
+                const postId = $(this).data("id");
+                currentPostId = postId;
+                
+                showPage('postPage');
+                
+                // Load post data (in real implementation, fetch from server)
+                const posts = await db.getPosts();
+                const post = posts.find(p => p.id == postId);
+                
+                if (post) {
+                    $("#postItem").data("id", post.id);
+                    $("#postType").removeClass().addClass(`post-tag ${categoryColor[post.type]}`).text(post.type);
+                    $("#postTitle").text(post.title);
+                    $("#postAuthor").text(post.author);
+                    $("#postContent").text(post.content);
+                    $("#postDate").text(formatDate(post.date));
+                    
+                    loadComments(postId);
+                }
+            });
+
+            // Create comment
+            $(".js-create-comment").click(async function() {
+                if (!currentUser) {
+                    showDialog("Please sign in to leave a comment.");
+                    return;
+                }
+                
+                const content = $("#commentInput").val().trim();
+                if (!content) return showDialog("Comment cannot be empty.");
+                
+                const commentData = {
+                    postId: currentPostId,
+                    author: currentUser.username,
+                    content,
+                    date: new Date().toISOString()
+                };
+                
+                const result = await db.createComment(commentData);
+                if (result.success) {
+                    $("#commentInput").val("");
+                    loadComments(currentPostId);
+                } else {
+                    showDialog("Failed to create comment. Please try again.");
+                }
+            });
+
+            // Authentication
+            $("#signInBtn").click(() => showPage('signInPage'));
+            $("#signUpBtn").click(() => showPage('signUpPage'));
+
+            $("#signIn").click(async function() {
+                const username = $("#userAccount").val().trim();
+                const password = $("#userPassword").val();
+
+                if (!username || !password) {
+                    showDialog("Please enter both username and password.");
+                    return;
+                }
+
+                const result = await db.authenticate(username, password);
+                if (result.success) {
+                    currentUser = result.user;
+                    updateAuthUI();
+                    $("#userAccount, #userPassword").val("");
+                    showPage('homePage');
+                    loadPosts();
+                    showDialog(`Welcome back, ${currentUser.username}!`);
+                } else {
+                    showDialog(result.message || "Invalid username or password.");
+                }
+            });
+
+            $("#signUp").click(async function() {
+                const username = $("#newAccount").val().trim();
+                const password = $("#newPassword").val();
+                const confirmPassword = $("#confirmPassword").val();
+
+                if (!username || !password || !confirmPassword) {
+                    showDialog("Please fill in all fields.");
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    showDialog("Passwords do not match.");
+                    return;
+                }
+
+                if (!checkPassword(password)) {
+                    showDialog("Password must be at least 8 characters long and include uppercase, lowercase, and numbers.");
+                    return;
+                }
+
+                const userData = {
+                    username,
+                    password,
+                    joinDate: new Date().toISOString()
+                };
+
+                const result = await db.register(userData);
+                if (result.success) {
+                    $("#newAccount, #newPassword, #confirmPassword").val("");
+                    showPage('signInPage');
+                    showDialog("Account created successfully! Please sign in.");
+                } else {
+                    showDialog(result.message || "Failed to create account. Username may already exist.");
+                }
+            });
+
+            $("#logoutBtn").click(() => {
+                currentUser = null;
+                updateAuthUI();
+                showPage('homePage');
+                loadPosts();
+                showDialog("You have been logged out.");
+            });
+
+            // My Account
+            $("#myAccount").click(() => {
+                if (!currentUser) return;
+                
+                showPage('myAccPage');
+                $("#userName").val(currentUser.username);
+                $("#joinDate").val(formatDate(currentUser.joinDate));
+            });
+
+            $("#backToHome").click(() => {
+                showPage('homePage');
+                loadPosts();
+            });
+
+            $("#saveChanges").click(async function() {
+                const newPassword = $("#newPass").val();
+                const confirmPassword = $("#confirmPass").val();
+
+                if (newPassword && newPassword !== confirmPassword) {
+                    showDialog("Passwords do not match.");
+                    return;
+                }
+
+                if (newPassword && !checkPassword(newPassword)) {
+                    showDialog("Password must be at least 8 characters long and include uppercase, lowercase, and numbers.");
+                    return;
+                }
+
+                if (newPassword) {
+                    const result = await db.updateUser(currentUser.id, { password: newPassword });
+                    if (result.success) {
+                        $("#newPass, #confirmPass").val("");
+                        showDialog("Password updated successfully!");
+                    } else {
+                        showDialog("Failed to update password. Please try again.");
+                    }
+                } else {
+                    showDialog("No changes to save.");
+                }
+            });
+
+            // Close dialog on overlay click
+            $("#dialogOverlay").click(function(e) {
+                if (e.target === this) {
+                    hideDialog();
+                }
+            });
+
+            // Enter key handling
+            $(document).on('keypress', function(e) {
+                if (e.which === 13) { // Enter key
+                    const activePageId = $('.page.active').attr('id');
+                    
+                    switch(activePageId) {
+                        case 'signInPage':
+                            $("#signIn").click();
+                            break;
+                        case 'signUpPage':
+                            $("#signUp").click();
+                            break;
+                        case 'postPage':
+                            if ($("#commentInput").is(':focus')) {
+                                $(".js-create-comment").click();
+                            }
+                            break;
+                    }
+                }
+            });
+
+            // Initialize
+            updateAuthUI();
+            loadPosts();
+        });
+
+        // Export functions for potential external use
+        window.ChattriForum = {
+            db,
+            loadPosts,
+            showDialog,
+            hideDialog
+        };
+    </script>
+
+    <!-- MySQL Database Setup Instructions -->
+    <!--
+    To connect this application to MySQL, you'll need to:
+    
+    1. Create a MySQL database with the following tables:
+    
+    CREATE TABLE users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        join_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    CREATE TABLE posts (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        type ENUM('News', 'Love', 'Gossip', 'Shopping', 'Jokes', 'Chat') NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        author VARCHAR(50) NOT NULL,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (author) REFERENCES users(username)
+    );
+    
+    CREATE TABLE comments (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        post_id INT NOT NULL,
+        author VARCHAR(50) NOT NULL,
+        content TEXT NOT NULL,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+        FOREIGN KEY (author) REFERENCES users(username)
+    );
+    
+    2. Create a backend API (Node.js/Express, PHP, Python/Flask, etc.) with endpoints:
+       - GET /api/posts - Get all posts (with optional type filter)
+       - POST /api/posts - Create new post
+       - GET /api/posts/:id - Get specific post
+       - GET /api/posts/:id/comments - Get comments for a post
+       - POST /api/comments - Create new comment
+       - POST /api/auth/login - User authentication
+       - POST /api/auth/register - User registration
+       - PUT /api/users/:id - Update user information
+    
+    3. Update the apiUrl in the MySQLDB class constructor to point to your backend API
+    
+    4. Remove or comment out the mock data methods once your real API is working
+    
+    5. Consider adding proper error handling, input validation, and security measures
+       like password hashing, JWT tokens, and SQL injection prevention
+    -->
+</body>
+</html>
