@@ -273,9 +273,9 @@ function applyTheme() {
     }
 
     if (settings.timer) {
-        $("timer").show();
+        $("timer").addClass("toggle-off");
     } else {
-        $("timer").hide();
+        $("timer").removeClass("toggle-off");
     }
 }
 
