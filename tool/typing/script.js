@@ -15,6 +15,7 @@ let letterStats = {};
 // Settings
 let settings = {
     darkMode: false,
+    timer: true,
     autoFocus: true,
     sound: true,
     timerPrecision: 2,
@@ -249,6 +250,7 @@ function loadSettings() {
     }
     
     $("#darkModeToggle").prop('checked', settings.darkMode);
+    $("#timerToggle").prop('checked', settings.timer);
     $("#autoFocusToggle").prop('checked', settings.autoFocus);
     $("#soundToggle").prop('checked', settings.sound);
     $("#timerPrecision").val(settings.timerPrecision);
@@ -268,6 +270,12 @@ function applyTheme() {
         $('html').attr('data-theme', 'dark');
     } else {
         $('html').removeAttr('data-theme');
+    }
+
+    if (settings.timer) {
+        $("timer").show();
+    } else {
+        $("timer").hide();
     }
 }
 
@@ -375,9 +383,14 @@ $(document).ready(function() {
         updateLetterStatsDisplay();
     });
 
-    // Settings event handlers
     $("#darkModeToggle").change(function () {
         settings.darkMode = $(this).is(':checked');
+        applyTheme();
+        saveSettings();
+    });
+
+    $("#timerToggle").change(function () {
+        settings.timer = $(this).is(':checked');
         applyTheme();
         saveSettings();
     });
@@ -460,6 +473,7 @@ $(document).ready(function() {
         if (confirm("Are you sure you want to reset all settings to default?")) {
             settings = {
                 darkMode: false,
+                timer: true,
                 autoFocus: true,
                 sound: true,
                 timerPrecision: 2,
