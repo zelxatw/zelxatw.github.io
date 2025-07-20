@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-1z3b7d9a5e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <div id="cover">
+        <h1>Typing Practice</h1>
+        <button id="normal">Normal</button>
+        <button id="event">Event</button>
+        <button id="stats">My Stats</button>
+        <button id="settings">Settings</button>
+    </div>
+    <button id="home">Go Back</button>
+    <div id="normalPage" class="page">
+        <h3>Completes: <span id="completes"></span> Streak: <span id="streak"></span> Avg L/s: <span id="lps"></span> Accuracy: <span id="accuracy"></span>%</h3>
+        <p id="timer">Time: 0.00s</p>
+        <h2 id="word">Loading...</h2>
+        <input type="text" id="normalInput" placeholder="Type the word here..." autocomplete="off" autofocus>
+        <p id="feedback"></p>
+    </div>
+    <div id="eventPage" class="page">
+        <button class="home">Go Back</button>
+        <div id="progressContainer">
+            <p>Progress: <span id="completedQuests">3</span>/10</p>
+        </div>
+        <div class="filters">
+            <button onclick="filter()">All</button>
+            <button onclick="filter('active')">Active</button>
+            <button onclick="filter('completed')">Completed</button>
+            <button onclick="filter('expired')">Expired</button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Quest</th>
+                <th>Content</th>
+                <th>Token</th>
+                <th>Expiration Date</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+            <tr>
+                <td colspan="4">Total Quests: <span id="totalQuests">0</span></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>
