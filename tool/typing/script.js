@@ -119,7 +119,7 @@ function startTimer() {
 
     timerInterval = setInterval(() => {
         elapsedTime = (Date.now() - startTime) / 1000;
-        $("#timer").text(`Time: ${elapsedTime.toFixed(settings.timerPrecision)}s`);
+        if (settings.timer) $("#timer").text(`Time: ${elapsedTime.toFixed(settings.timerPrecision)}s`);
     }, 100);
 }
 
@@ -273,9 +273,9 @@ function applyTheme() {
     }
 
     if (settings.timer) {
-        $("timer").addClass("toggle-off");
+        $("#timer").removeClass("toggle-off");
     } else {
-        $("timer").removeClass("toggle-off");
+        $("#timer").addClass("toggle-off");
     }
 }
 
