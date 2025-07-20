@@ -273,9 +273,9 @@ function applyTheme() {
     }
 
     if (settings.timer) {
-        $("#timer").show());
+        $("#timer").show();
     } else {
-        $("#timer").hide());
+        $("#timer").hide();
     }
 }
 
