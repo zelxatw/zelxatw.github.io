@@ -174,10 +174,6 @@ button:active {
     font-weight: bold;
 }
 
-.toggle-off {
-    display: none;
-}
-
 .settings-section {
     margin: 20px 0;
     padding: 20px;
@@ -264,7 +260,6 @@ select, input[type="number"] {
     min-width: 120px;
 }
 
-/* Stats Page */
 .stats-nav {
     margin-bottom: 20px;
 }
@@ -340,7 +335,6 @@ select, input[type="number"] {
     border-color: #d32f2f;
 }
 
-/* Scrollbar styling */
 .page::-webkit-scrollbar {
     width: 8px;
 }
