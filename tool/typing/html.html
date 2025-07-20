@@ -7,51 +7,137 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-1z3b7d9a5e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8f2c5f8b1c3d2e4f8b6c7d9e8">
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="script.js"></script>
+    <title>Typing Training | zelxatw.github.io</title>
 </head>
 <body>
     <div id="cover">
-        <h1>Typing Practice</h1>
-        <button id="normal">Normal</button>
-        <button id="event">Event</button>
+        <h1>Typing Training</h1>
+        <button id="normal">Free Practice</button>
+        <button id="quests">Quests</button>
         <button id="stats">My Stats</button>
         <button id="settings">Settings</button>
     </div>
+    
     <button id="home">Go Back</button>
+    
     <div id="normalPage" class="page">
-        <h3>Completes: <span id="completes"></span> Streak: <span id="streak"></span> Avg L/s: <span id="lps"></span> Accuracy: <span id="accuracy"></span>%</h3>
+        <div id="modeSelector">
+            <button id="wordMode" class="active">Word Mode</button>
+            <button id="sentenceMode">Sentence Mode</button>
+        </div>
+        <h3>Completes: <span id="completes">0</span> | Streak: <span id="streak">0</span> | Avg L/s: <span id="lps">0.00</span> | Accuracy: <span id="accuracy">0.00</span>%</h3>
         <p id="timer">Time: 0.00s</p>
-        <h2 id="word">Loading...</h2>
+        <h2 id="word">Click to start...</h2>
         <input type="text" id="normalInput" placeholder="Type the word here..." autocomplete="off" autofocus>
         <p id="feedback"></p>
     </div>
-    <div id="eventPage" class="page">
-        <button class="home">Go Back</button>
-        <div id="progressContainer">
-            <p>Progress: <span id="completedQuests">3</span>/10</p>
+    <div id="questPage" class="page"></div>
+    <div id="statPage" class="page">
+        <div class="stats-nav">
+            <button id="statGeneralBtn" class="active">General</button>
+            <button id="statAdvancedBtn">Advanced</button>
         </div>
-        <div class="filters">
-            <button onclick="filter()">All</button>
-            <button onclick="filter('active')">Active</button>
-            <button onclick="filter('completed')">Completed</button>
-            <button onclick="filter('expired')">Expired</button>
+        
+        <div id="statGeneral" class="stats-content active">
+            <h3>Free Practice Statistics</h3>
+            <div class="stat-row">
+                <span>Total Attempts:</span>
+                <span id="statAttempts">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Completed:</span>
+                <span id="statCompletes">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Accuracy:</span>
+                <span id="statAccuracy">0.00%</span>
+            </div>
+            <div class="stat-row">
+                <span>Current Streak:</span>
+                <span id="statStreak">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Best Streak:</span>
+                <span id="statBestStreak">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Average L/s:</span>
+                <span id="statLPS">0.00</span>
+            </div>
+            
+            <button id="resetStats" class="reset-button">Reset All Statistics</button>
         </div>
-        <table>
-            <thead>
-            <tr>
-                <th>Quest</th>
-                <th>Content</th>
-                <th>Token</th>
-                <th>Expiration Date</th>
-                <th>Action</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot>
-            <tr>
-                <td colspan="4">Total Quests: <span id="totalQuests">0</span></td>
-            </tr>
-            </tfoot>
-        </table>
+        
+        <div id="statAdvanced" class="stats-content">
+            <h3>Average Inter-Keystroke Interval</h3>
+            <p>Time taken to type each letter (in seconds):</p>
+            <div id="letterStatsContainer" class="letter-stats">
+                <p>No data available yet. Start practicing to see your letter statistics!</p>
+            </div>
+            <button id="resetLetterStats" class="reset-button">Reset Letter Statistics</button>
+        </div>
+    </div>
+    
+    <div id="settingsPage" class="page">
+        <h2>Settings</h2>
+        
+        <div class="settings-section">
+            <h3>Appearance</h3>
+            <div class="setting-item">
+                <label for="darkModeToggle">Dark Mode</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Practice Settings</h3>
+            <div class="setting-item">
+                <label for="autoFocusToggle">Auto-focus input field</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="autoFocusToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label for="soundToggle">Sound effects</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="soundToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <label for="timerPrecision">Timer precision:</label>
+                <select id="timerPrecision">
+                    <option value="1">0.1s</option>
+                    <option value="2" selected>0.01s</option>
+                    <option value="3">0.001s</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h3>Word Lists</h3>
+            <div class="setting-item">
+                <label for="wordListSize">Word list size:</label>
+                <select id="wordListSize">
+                    <option value="basic">Basic (72 words)</option>
+                    <option value="extended" selected>Extended (coming soon)</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <label for="minWordLength">Minimum word length:</label>
+                <input type="number" id="minWordLength" min="3" max="10" value="3">
+            </div>
+            <div class="setting-item">
+                <label for="maxWordLength">Maximum word length:</label>
+                <input type="number" id="maxWordLength" min="5" max="20" value="20">
+            </div>
+        </div>
+        
+        <button id="resetSettings" class="reset-button">Reset to Default Settings</button>
     </div>
 </body>
 </html>
